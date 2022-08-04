@@ -1,8 +1,6 @@
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import {TextSection} from './UserItemStyles' 
-import * as yup from 'yup'; 
-import { useFormik } from "formik";
+import {TextSection} from './UserItemStyles'  
 import { useState } from "react";
 import { addUser } from "../../../reducer/user/userSlice";
 import { useAppDispatch } from "../../../app/hooks";
@@ -37,8 +35,7 @@ const UserItem = () => {
         lastName: lname,
         position: position,
         password: password
-      }
-      debugger;
+      } 
       dispatch(addUser(user))
       onResetForm()
     }
@@ -117,10 +114,9 @@ const UserItem = () => {
           />
           </TextSection>
           <div style={{float: 'right'}}>
-          <Button variant="outlined"  type="reset" onClick={onResetForm}>Reset</Button>
+          <Button style={{marginRight: '5px'}}variant="outlined"  type="reset" onClick={onResetForm}>Reset</Button>
           <Button color="primary" variant="contained"  type="submit" onClick={onAdd}>Add</Button>
-          </div>
-        {/* </form> */}
+          </div> 
       </div>
     );
     

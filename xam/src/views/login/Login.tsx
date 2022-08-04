@@ -1,11 +1,12 @@
-import styled from "@emotion/styled";
+ 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";  
-import { useEffect, useState } from "react";
-import { useAppDispatch } from "../../redux/hooks";
-import { retrieveUsers } from "../../redux/user/userSlice";
+import { useEffect, useState } from "react"; 
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { retrieveUsers, selectAllUsers, setLoggedInUser } from "../../reducer/user/userSlice";
+import { ErrorText, ErrorWrapper, TextSection } from "./LoginStyles";
 const style = {
     position: 'absolute' as 'absolute',
     top: '50%',
@@ -18,44 +19,52 @@ const style = {
     p: 4,
   };
 
-const TextSection = styled.div`
-  padding: 5px
-`
-const ErrorWrapper = styled.div`
-    background: rgba(255, 0, 0, .1);
-    line-height: 2;
-    padding: 5px;
-    margin-top: 5px;
-`
-const ErrorText = styled.span`
-    color: red;
-    font-weight: 600;
-`
 const Login = () => {
     const [open, setOpen] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
-    const [branchId, setBranchId] = useState('');
-    const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
+    const [branchId, setBranchId] = useState('10002');
+    const [userName, setUserName] = useState('testuser01');
+    const [password, setPassword] = useState('pa55w0rd001');
 
-    const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch(); 
+
+    const users = useAppSelector(selectAllUsers); 
     const handleClose = () => {
-    
     }
 
     useEffect(()=> {
         dispatch(retrieveUsers())
     },[])
 
+    useEffect(()=> { 
+        users.user?.loggedInUser !==  '' ? setOpen(false) : setOpen(true)
+    },[users.user?.loggedInUser])
+
     const onLogin = () => {
         if (branchId && userName && password){
             setErrorMsg('')
-            // authenticateUser(branchId,userName,password)
+            const isLoginRegistered = authenticateUser(branchId, userName, password);
+            setOpen(!isLoginRegistered);
+            if (isLoginRegistered) {
+                dispatch(setLoggedInUser(branchId))
+            } else {
+                setErrorMsg('User does not exist!')
+            }
+           
         } else {
             setErrorMsg(getErrorMessage())
-        }
-        // branchId && userName && password ? setErrorMsg('') : setErrorMsg(getErrorMessage())
+        } 
+    }
 
+    const authenticateUser = (branchId: string, userName: string, password: string): boolean => {
+
+        const loggedUser = users.user?.data?.filter((item: any) => {
+            if ((parseInt(branchId) === item.branchId) && (userName === item.userName) && (password === item.password)){
+                return item;
+            }
+        });
+        console.log(loggedUser); 
+        return loggedUser.length > 0;
     }
     const getErrorField = () => {
         const requiredFields: string[] = [];
@@ -95,7 +104,7 @@ const Login = () => {
             <Box sx= {style} >
                 <TextSection>Login</TextSection> 
                 <TextSection>
-                    <TextField id="outlined-basic" label="Branch id" variant="outlined" fullWidth value={branchId} onChange={(event)=>setBranchId(event.target.value)}/>
+                    <TextField data-test-id='branch-id' id="outlined-basic" label="Branch id" variant="outlined" fullWidth value={branchId} onChange={(event)=>setBranchId(event.target.value)}/>
                 </TextSection>
                 <TextSection>
                     <TextField id="outlined-basic" label="User name" variant="outlined" fullWidth value={userName} onChange={(event)=>setUserName(event.target.value)}/>
@@ -123,4 +132,4 @@ const Login = () => {
     )
 }
 
-export default Login;
+export  {Login};

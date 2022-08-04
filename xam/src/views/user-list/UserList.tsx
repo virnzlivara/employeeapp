@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { selectAllUsers, selectLoggedInUser, setLoggedOutUser } from '../../reducer/user/userSlice';
 import BasicTable from '../component/BasicTable/BasicTable';
-import Login from '../login/login';
+import { Login } from '../login/Login';
+// import Login from '../login/Login';
 import UserItem from './user-item/UserItem';
 import { HeaderWrapper,Username,Logout, ContentWrapper, UserWrapper, TableWrapper } from './UserListStyles';
 
@@ -18,15 +19,13 @@ const UserList = () => {
             if ((user === item.branchId.toString())){
                 return item;
             }
-        }); 
-        debugger;
+        });  
         setUserName(loggedUser[0]?.userName);
     }, [user])
 
     const onLogout = () => {
         dispatch(setLoggedOutUser())
-    }
-    debugger;
+    } 
     return(
         <div>
             <div>
