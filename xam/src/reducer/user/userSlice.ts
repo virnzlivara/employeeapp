@@ -44,7 +44,7 @@ export const userSlice = createSlice({
       state.data.push(action.payload!)
     },
     deleteUser: (state, action: PayloadAction<number>) => { 
-      state.data = state.data.filter(item => item.branchId != action.payload)
+      state.data = state.data.filter(item => item.branchId !== action.payload)
     },
   },
   extraReducers: (builder) => {

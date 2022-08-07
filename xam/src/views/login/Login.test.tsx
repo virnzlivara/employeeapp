@@ -1,36 +1,59 @@
-import { render } from "@testing-library/react"
-import { Provider } from "react-redux";
-import App from "../../App";
-import { store } from "../../app/store";
-// import { Login } from "./Login" 
-describe("Login", () => {
-    // test('validate input', () => { 
-    //     const brandId = 10001;
-    //     const uname = 'testuser01';
-    //     const password = 'pa55w0rd001'
-    //     expect(Login.authenticateUser)
-    //  })
-    test('Login should render', ()=> {
-        // const { getByTestId } = render(<Provider store={store}>
-        //     <App />
-        //  </Provider>);
-        //  console.log(getByTestId)
-        // expect(container.getAllByTestId('login-component').length).toBe(1);
+import { render, screen, fireEvent, cleanup} from "@testing-library/react"
+import { Provider } from "react-redux"; 
+import { store } from "../../app/store"; 
+import { Login } from "./Login"; 
+
+import user from "@testing-library/user-event";
+
+describe("Login", () => { 
+
+    const userCredential = {
+        branchId: '10002',
+        userName: 'testuser01',
+        password: 'pa55w0rd001',
+      };
+
+    const Wrapper = ({ children }) => (
+        // you could just use your normal Redux store or create one just for the test
+        <Provider store={store}>{children}</Provider>
+    );
+    beforeEach(()=> {
+        render(<Login />, { wrapper: Wrapper }); 
     })
-})
-// test('modal is shown if no user is logged in', () => { 
-// });
 
-// test('modal is not shown if user is logged in', () => { 
-// });
+    afterEach(cleanup);
+    test('login modal should render', ()=> {
+        const modal = screen.getByTestId('modal') 
+        expect(modal).toBeInTheDocument(); 
+    });
 
-// test('Fields are blank by default', () => { 
-// });
+    test('Required fields should be displayed', () => { 
+        const branchId = screen.getByTestId('branch-id');
+        const userName = screen.getByTestId('user-name');
+        const password = screen.getByTestId('password');
+        expect(branchId).toBeInTheDocument();
+        expect(userName).toBeInTheDocument();
+        expect(password).toBeInTheDocument();
+    });
 
-// test("Error label is displayed when there's an error", () => { 
+    test('Required fields should be blank initially', () => { 
+        const branchId = screen.getByTestId('branch-id');
+        const userName = screen.getByTestId('user-name');
+        const password = screen.getByTestId('password');
+        expect(branchId.nodeValue).toBe(null);
+        expect(userName.nodeValue).toBe(null);
+        expect(password.nodeValue).toBe(null);
+    });
 
-// });
-
-// test("Login in user when there's no error", () => { 
-
-// });
+    test('ErrorWrapper should not be displayed if  all required fields are populated', () => {  
+        const branchId = screen.getByTestId('branch-id');
+        const userName = screen.getByTestId('user-name');
+        const password = screen.getByTestId('password');
+        const login = screen.getByTestId('button'); 
+        const errorMsg = screen.getAllByTestId('error-message');  
+        user.type(branchId, userCredential.branchId);
+        user.type(userName, userCredential.userName);
+        user.type(password, userCredential.password);
+        fireEvent.click(login); 
+        expect(errorMsg.length).toBe(0);
+    }); 

@@ -19,6 +19,7 @@ const UserList = () => {
             if ((user === item.branchId.toString())){
                 return item;
             }
+            return;
         });  
         setUserName(loggedUser[0]?.userName);
     }, [user])
@@ -45,7 +46,7 @@ const UserList = () => {
                     </ContentWrapper>
                     </div> : null
                 }  
-                <Login/>
+                <Login data-testid='login'/>
             </div>
          </div>
     );

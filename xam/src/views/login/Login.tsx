@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";  
+import { Field, Form, Formik, FormikProps } from "formik";
 import { useEffect, useState } from "react"; 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { retrieveUsers, selectAllUsers, setLoggedInUser } from "../../reducer/user/userSlice";
@@ -22,9 +23,9 @@ const style = {
 const Login = () => {
     const [open, setOpen] = useState(true);
     const [errorMsg, setErrorMsg] = useState('');
-    const [branchId, setBranchId] = useState('10002');
-    const [userName, setUserName] = useState('testuser01');
-    const [password, setPassword] = useState('pa55w0rd001');
+    const [branchId, setBranchId] = useState('');
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
 
     const dispatch = useAppDispatch(); 
 
@@ -68,13 +69,13 @@ const Login = () => {
     }
     const getErrorField = () => {
         const requiredFields: string[] = [];
-        if (branchId == '') { 
+        if (branchId === '') { 
             requiredFields.push("Branch id");
         }
-        if (userName == '') { 
+        if (userName === '') { 
             requiredFields.push("username");
         }
-        if (password == '') { 
+        if (password === '') { 
             requiredFields.push("password");
         }
         let requiredFieldsStr = '';
@@ -92,7 +93,7 @@ const Login = () => {
     const getErrorMessage = () => { 
         const errorStr = `Please fill up the following details: ${getErrorField()}`;
         return errorStr;
-    }
+    } 
     return (
         <div>
             <Modal
@@ -101,27 +102,38 @@ const Login = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx= {style} >
-                <TextSection>Login</TextSection> 
-                <TextSection>
-                    <TextField data-test-id='branch-id' id="outlined-basic" label="Branch id" variant="outlined" fullWidth value={branchId} onChange={(event)=>setBranchId(event.target.value)}/>
-                </TextSection>
-                <TextSection>
-                    <TextField id="outlined-basic" label="User name" variant="outlined" fullWidth value={userName} onChange={(event)=>setUserName(event.target.value)}/>
-                </TextSection>
-                <TextSection>
-                    <TextField id="outlined-basic" label="Password" variant="outlined" fullWidth value={password} onChange={(event)=>setPassword(event.target.value)}/>
-                </TextSection> 
-                <Button variant="contained" fullWidth onClick={()=>onLogin()}>Login</Button>
-                {
-                    errorMsg ? 
-                    <ErrorWrapper>
-                        <ErrorText>
-                            {errorMsg}
-                        </ErrorText>
-                    </ErrorWrapper> : null
+            <Box sx= {style} > 
+                <Formik
+                    initialValues={{ branchId: '', userName: '', password: ''}}
+                    onSubmit={(values, actions) => { 
+                        onLogin();
+                    }}
+                    >
+                    {(props: FormikProps<any>) => (
+                        <Form>
+                         <TextSection>Login</TextSection> 
+                        <TextSection>
+                            <TextField data-test-id='branch-id' id="outlined-basic" label="Branch id" variant="outlined" fullWidth value={branchId} onChange={(event)=>setBranchId(event.target.value)}/>
+                        </TextSection>
+                        <TextSection>
+                            <TextField id="outlined-basic" label="User name" variant="outlined" fullWidth value={userName} onChange={(event)=>setUserName(event.target.value)}/>
+                        </TextSection>
+                        <TextSection>
+                            <TextField id="outlined-basic" label="Password" variant="outlined" fullWidth value={password} onChange={(event)=>setPassword(event.target.value)}/>
+                        </TextSection> 
+                        <Button variant="contained" fullWidth type="submit">Login</Button>
+                        {
+                            errorMsg ? 
+                            <ErrorWrapper>
+                                <ErrorText>
+                                    {errorMsg}
+                                </ErrorText>
+                            </ErrorWrapper> : null
 
-                }
+                        }  
+                        </Form>
+                    )}
+                    </Formik>
                 
             
             
